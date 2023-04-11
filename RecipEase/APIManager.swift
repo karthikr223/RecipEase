@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-let OPEN_AI_API_KEY = "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"
+let OPEN_AI_API_KEY = "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"
 
 class APIManager {
     static let shared = APIManager()
@@ -85,10 +85,13 @@ class APIManager {
     func generateDessertDescription(dessert: Dessert, completionHandler: @escaping (String) -> Void){
         let prompt = "Write me two-line appealing descriptions of the following food items. The descriptions must be short as they will be used as a preview for the food item in a recipe app. Here are the food items:\n\nLemon Coconut Cake: Enjoy a flavor fusion of zesty lemon curd and sweet cream cheese, all sandwiched between layers of deliciously moist coconut cake - an irresistible treat for any special occasion!\n\nStrawberry Rhubarb Upside Down Cake: Enjoy the sweet and tart combination of succulent strawberries and tangy rhubarb atop a deliciously moist cake, all finished off with a luxurious caramel sauce!\n\nKaiserschmarrn: This classic Austrian dish of torn pancakes is made extra special with plump raisins soaked in rum, and your choice of delicious fruits as a topping - irresistible for breakfast, lunch or dinner.\n\n\(dessert.name):"
 
-        guard let openAIURL = URL(string: "https://api.openai.com/v1/completions") else {return }
+        guard let openAIURL = URL(string: "https://api.openai.com/v1/chat/completions") else {return }
         let parameters: [String: Any] = [
-          "model": "text-davinci-003",
-          "prompt": prompt,
+          "model": "gpt-3.5-turbo",
+          "messages": [
+            ["role": "user",
+            "content": prompt],
+          ],
           "max_tokens": 50,
           "temperature": 0.9,
           "top_p": 1,
@@ -105,7 +108,7 @@ class APIManager {
             return
         }
         request.httpBody = httpBody
-        request.timeoutInterval = 20
+        request.timeoutInterval = 10
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             if let error = error {
                 print(error)
@@ -116,16 +119,14 @@ class APIManager {
                     if let dictionary = json as? [String: Any] {
                         for (key,_) in dictionary{
                             if key=="choices" {
-                                if let choices = dictionary[key] as? Array<Any>{
-                                    if let firstChoice = choices[0] as? [String: Any]{
-                                        if let textCompletion = firstChoice["text"] as? String{
-                                            let returnString = textCompletion.replacingOccurrences(of: "^\\s*", with: "", options: .regularExpression)
-                                            DispatchQueue.main.async {
-                                                completionHandler(returnString)
-                                            }
-    
-                                        }
-                                    }
+                                guard let choices = dictionary[key] as? Array<Any> else {continue}
+                                guard let firstChoice = choices[0] as? [String: Any] else {continue}
+                                guard let message = firstChoice["message"] as? [String: Any] else {continue}
+                                guard let content = message["content"] as? String else {continue}
+                                
+                                let returnString = content.replacingOccurrences(of: "^\\s*", with: "", options: .regularExpression)
+                                DispatchQueue.main.async {
+                                    completionHandler(returnString)
                                 }
                             }
                         }

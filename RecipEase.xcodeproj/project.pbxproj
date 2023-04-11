@@ -22,6 +22,7 @@
 
 /* Begin PBXFileReference section */
 		881131C629E53F080053C02A /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
+		88328D5E29E54BDC003FFA52 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		886FF4CE29E53D75000C7F6B /* RecipEase.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RecipEase.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		886FF4D129E53D75000C7F6B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		886FF4D329E53D75000C7F6B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -66,12 +67,13 @@
 		886FF4D029E53D75000C7F6B /* RecipEase */ = {
 			isa = PBXGroup;
 			children = (
-				886FF50029E53E5E000C7F6B /* Models */,
-				886FF4FF29E53E56000C7F6B /* ViewControllers */,
+				88328D5E29E54BDC003FFA52 /* README.md */,
 				886FF4D129E53D75000C7F6B /* AppDelegate.swift */,
 				886FF4D329E53D75000C7F6B /* SceneDelegate.swift */,
 				886FF4FB29E53E3C000C7F6B /* ImageCache.swift */,
 				886FF4FD29E53E4D000C7F6B /* APIManager.swift */,
+				886FF50029E53E5E000C7F6B /* Models */,
+				886FF4FF29E53E56000C7F6B /* ViewControllers */,
 				886FF4D729E53D75000C7F6B /* Main.storyboard */,
 				886FF4DA29E53D76000C7F6B /* Assets.xcassets */,
 				886FF4DC29E53D76000C7F6B /* LaunchScreen.storyboard */,

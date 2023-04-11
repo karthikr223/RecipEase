@@ -27,6 +27,7 @@ class HomeViewController: UIViewController {
     
     var areDescriptionsLoaded = false
     var numDescriptionsLoaded = 0
+    var numGroupsLoaded = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -127,12 +128,48 @@ class HomeViewController: UIViewController {
     
     ///Calls the API to send a request to ChatGPT to generate a description for each dessert. As the descriptions are populated, the loading screen progress bar is updated, and the home screen is loaded when all the descriptions have been generated.
     func generateDescriptions(){
-        for dessert in desserts {
-            dessert.getGPTDescription { fetchedDescription in
-                //return once all descriptions have been generated
+        //Split the dessert list into groups of 8. This strikes a balance of: 1) providing a long enough context so that the output from GPT is not repetitive and 2) returns a response in a reasonable time (5-7 seconds).
+        let dessertGroups = desserts.chunked(into: 8)
+        
+        //The core prompt to generate the descriptions.
+        let mainPrompt = "Write me two-line appealing descriptions of the following food items. The descriptions must be short as they will be used as a preview for the food item in a recipe app. Your descriptions for each food item should strictly be in the following format: \"1) Name of food item exactly as given in the prompt: Description of food item that is generated as output\". Follow the above format for each food item, but put each food item and its description on a separate line.  Here are the food items that you need to generate descriptions for as per the form given in quotes above:/n/n"
+        
+        //create a prompt that gets 8 descriptions at a time.
+        for group in dessertGroups {
+            var groupPrompt = mainPrompt
+            
+            if(group.count < 1){
+                return
+            }
+            
+            for i in 0...group.count - 1 {
+                groupPrompt = groupPrompt + String(i + 1) + ") " + group[i].name + ":\n"
+            }
+            
+            //Parse the API response.
+            APIManager.shared.requestChatGPT(prompt: groupPrompt) {(completion) in
+                for i in 0...group.count - 1 {
+                    //Match each dessert to its description.
+                    var matchedDescription: [String] = []
+                    if(i < group.count - 1){
+                        matchedDescription = completion.match("\(NSRegularExpression.escapedPattern(for: group[i].name)): (.*)\n").map({$0[1]})
+                    }
+                    else {
+                        matchedDescription = completion.match("\(NSRegularExpression.escapedPattern(for: group[i].name)): (.*)").map({$0[1]})
+                    }
+                    
+                    if(matchedDescription.count > 0){
+                        group[i].description = matchedDescription[0]
+                    }
+                }
+                
+                self.numGroupsLoaded += 1
                 self.numDescriptionsLoaded = self.desserts.filter({$0.description != nil}).count
+                //update the progress bar
                 self.setProgressBarStatus()
-                if(self.numDescriptionsLoaded == self.desserts.count){
+                
+                //return once all descriptions have been generated
+                if(self.numGroupsLoaded == dessertGroups.count){
                     self.areDescriptionsLoaded = true
                     self.setupView()
                 }
@@ -155,7 +192,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         var content = cell.defaultContentConfiguration()
         content.text = selectedDessert.name
         content.textProperties.font = UIFont.systemFont(ofSize: 18, weight: .medium)
-        content.secondaryText = selectedDessert.description ?? selectedDessert.details?.getIngredientsDisplayString()
+        content.secondaryText = selectedDessert.description
         content.secondaryTextProperties.color = UIColor(red: 146/255, green: 146/255, blue: 146/255, alpha: 1)
         content.secondaryTextProperties.numberOfLines = 3
         
@@ -171,6 +208,13 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
                     selectedDessert.image = image
                     self.tableView.reloadRows(at: [indexPath], with: .none)
                 }
+            }
+        }
+        
+        //If there was some issue with the GPT call (GPT sometimes fixes spelling errors which can interfere with the output parsing), call it again for just that specific item.
+        if selectedDessert.description == nil {
+            selectedDessert.getGPTDescription { _ in
+                self.tableView.reloadRows(at: [indexPath], with: .none)
             }
         }
         
@@ -216,6 +260,26 @@ extension HomeViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.text = ""
         searchBar.resignFirstResponder()
+        
+    }
+}
+
+///String extension that implements regex matching.
+extension String {
+    func match(_ regex: String) -> [[String]] {
+        let nsString = self as NSString
+        return (try? NSRegularExpression(pattern: regex, options: []))?.matches(in: self, options: [], range: NSMakeRange(0, nsString.length)).map { match in
+            (0..<match.numberOfRanges).map { match.range(at: $0).location == NSNotFound ? "" : nsString.substring(with: match.range(at: $0)) }
+        } ?? []
+    }
+}
+
+///Array extension to split an array into chunks of size n.
+extension Array {
+    func chunked(into size: Int) -> [[Element]] {
+        return stride(from: 0, to: count, by: size).map {
+            Array(self[$0 ..< Swift.min($0 + size, count)])
+        }
     }
 }
 

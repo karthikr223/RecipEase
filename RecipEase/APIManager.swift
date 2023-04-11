@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-let OPEN_AI_API_KEY = "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"
+let OPEN_AI_API_KEY = "ENTER_OPEN_AI_API_KEY_HERE"
 
 class APIManager {
     static let shared = APIManager()
@@ -20,8 +20,8 @@ class APIManager {
         let task = URLSession.shared.dataTask(with: dessertListURL, completionHandler: { (data, response, error) in
             
             if error != nil {
-              print("Error accessing dessert list")
-              return
+                print("Error accessing dessert list")
+                return
             }
             
             if let data = data {
@@ -32,7 +32,7 @@ class APIManager {
                 }
             }
         })
-
+        
         task.resume()
         
     }
@@ -44,8 +44,8 @@ class APIManager {
         let task = URLSession.shared.dataTask(with: url, completionHandler: { (data, response, error) in
             
             if error != nil {
-              print("Error accessing dessert details")
-              return
+                print("Error accessing dessert details")
+                return
             }
             
             if let data = data {
@@ -57,7 +57,7 @@ class APIManager {
                 }
             }
         })
-
+        
         task.resume()
         
     }
@@ -67,9 +67,8 @@ class APIManager {
         let task = URLSession.shared.dataTask(with: url, completionHandler: { (data, response, error) in
             
             if error != nil {
-                //TODO: show alert on error
-              print("Error accessing dessert list")
-              return
+                print("Error accessing dessert list")
+                return
             }
             
             if let data = data {
@@ -81,24 +80,22 @@ class APIManager {
         task.resume()
     }
     
-    ///Generates a short description using OpenAI's ChatGPT API, using a preconstructed prompt filled with the appropriate dessert name.
-    func generateDessertDescription(dessert: Dessert, completionHandler: @escaping (String) -> Void){
-        let prompt = "Write me two-line appealing descriptions of the following food items. The descriptions must be short as they will be used as a preview for the food item in a recipe app. Here are the food items:\n\nLemon Coconut Cake: Enjoy a flavor fusion of zesty lemon curd and sweet cream cheese, all sandwiched between layers of deliciously moist coconut cake - an irresistible treat for any special occasion!\n\nStrawberry Rhubarb Upside Down Cake: Enjoy the sweet and tart combination of succulent strawberries and tangy rhubarb atop a deliciously moist cake, all finished off with a luxurious caramel sauce!\n\nKaiserschmarrn: This classic Austrian dish of torn pancakes is made extra special with plump raisins soaked in rum, and your choice of delicious fruits as a topping - irresistible for breakfast, lunch or dinner.\n\n\(dessert.name):"
-
+    ///Sends a request via OpenAI's ChatGPT API, using the input prompt.
+    func requestChatGPT(prompt: String, completionHandler: @escaping (String) -> Void){
+        //The API call is a POST request that takes the prompt and other parameters in the body.
         guard let openAIURL = URL(string: "https://api.openai.com/v1/chat/completions") else {return }
         let parameters: [String: Any] = [
-          "model": "gpt-3.5-turbo",
-          "messages": [
-            ["role": "user",
-            "content": prompt],
-          ],
-          "max_tokens": 50,
-          "temperature": 0.9,
-          "top_p": 1,
-          "n": 1,
-          "frequency_penalty": 0.65,
-          "presence_penalty": 0,
-          "stream": false,
+            "model": "gpt-3.5-turbo",
+            "messages": [
+                ["role": "user",
+                 "content": prompt],
+            ],
+            "temperature": 0.9,
+            "top_p": 1,
+            "n": 1,
+            "frequency_penalty": 0.65,
+            "presence_penalty": 0,
+            "stream": false,
         ]
         var request = URLRequest(url: openAIURL)
         request.httpMethod = "POST"
@@ -108,7 +105,7 @@ class APIManager {
             return
         }
         request.httpBody = httpBody
-        request.timeoutInterval = 10
+        request.timeoutInterval = 30
         let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
             if let error = error {
                 print(error)
@@ -116,6 +113,7 @@ class APIManager {
             if let data = data {
                 do {
                     let json = try JSONSerialization.jsonObject(with: data, options: [])
+                    //Parse the response JSON
                     if let dictionary = json as? [String: Any] {
                         for (key,_) in dictionary{
                             if key=="choices" {
@@ -124,7 +122,9 @@ class APIManager {
                                 guard let message = firstChoice["message"] as? [String: Any] else {continue}
                                 guard let content = message["content"] as? String else {continue}
                                 
+                                //Final output is a single string
                                 let returnString = content.replacingOccurrences(of: "^\\s*", with: "", options: .regularExpression)
+                                //Return the received generation
                                 DispatchQueue.main.async {
                                     completionHandler(returnString)
                                 }

@@ -50,7 +50,9 @@ class Dessert: Decodable {
             }
         }
         else {
-            APIManager.shared.generateDessertDescription(dessert: self) {(fetchedDescription) in
+            //Request the ChatGPT API for a description for just this item.
+            let prompt = "Write me a two-line appealing description of the food item \(self.name). The description must be short as it will be used as a preview for the food item in a recipe app."
+            APIManager.shared.requestChatGPT(prompt: prompt){(fetchedDescription) in
                 self.description = fetchedDescription
                 DispatchQueue.main.async {
                     completionHandler(fetchedDescription)

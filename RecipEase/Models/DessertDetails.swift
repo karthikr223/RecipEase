@@ -44,13 +44,6 @@ struct DessertDetails: Decodable {
         }
     }
     
-    ///Creates a string of all the ingredients that can also be used as a description in the home screen UITableView. Can be used
-    ///instead of calling the ChatGPT API for better performance.
-    func getIngredientsDisplayString() -> String {
-        let displayString = ingredients.map({$0.ingredient.lowercased()}).joined(separator: ", ")
-        return displayString
-    }
-    
     enum CodingKeys: String, CodingKey {
         case name = "idMeal"
         case instructions = "strInstructions"

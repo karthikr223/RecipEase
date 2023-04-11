@@ -51,6 +51,7 @@
 		886FF4C529E53D75000C7F6B = {
 			isa = PBXGroup;
 			children = (
+				88328D5E29E54BDC003FFA52 /* README.md */,
 				886FF4D029E53D75000C7F6B /* RecipEase */,
 				886FF4CF29E53D75000C7F6B /* Products */,
 			);
@@ -67,7 +68,6 @@
 		886FF4D029E53D75000C7F6B /* RecipEase */ = {
 			isa = PBXGroup;
 			children = (
-				88328D5E29E54BDC003FFA52 /* README.md */,
 				886FF4D129E53D75000C7F6B /* AppDelegate.swift */,
 				886FF4D329E53D75000C7F6B /* SceneDelegate.swift */,
 				886FF4FB29E53E3C000C7F6B /* ImageCache.swift */,

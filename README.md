@@ -33,7 +33,7 @@ Write me two-line appealing descriptions of the following food items. The descri
 8) Dessert Name 8
 ```
 
-I chose to split the list of desserts into groups of 8. This is because requesting a single output creates repetitive outputs for the dessert list (since ChatGPT does not know what kind of output it previously generated without it being in the same context). Requesting the entire list of desserts at once would generate even higher quality output, but the response time is very slow (40 - 50 seconds). For 8, it is 5 - 7 seconds.
+The dessert list has been split into groups of 8 since requesting a single output creates repetitive descriptions, since ChatGPT is not aware of how it previously generated outputs. Requesting the entire list of desserts at once would generate even higher quality output, but the response time is very slow (40-50 seconds instead of 5-7 seconds), at least with the standard developer access.
 
 The ChatGPT API is called before the app opens the home screen. The progress is shown on a loading screen and the home screen opened when the generated responses for all desserts have been received.
 

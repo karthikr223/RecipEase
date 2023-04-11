@@ -128,7 +128,11 @@ class APIManager {
                                 DispatchQueue.main.async {
                                     completionHandler(returnString)
                                 }
+                                return
                             }
+                        }
+                        DispatchQueue.main.async {
+                            completionHandler("")
                         }
                     }
                 } catch {

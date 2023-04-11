@@ -160,30 +160,38 @@ class DetailViewController: UIViewController, UIScrollViewDelegate {
         divider1.backgroundColor = UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
         contentView.addSubview(divider1)
         
-        descriptionSubHeading.text = "Description"
-        descriptionSubHeading.font = UIFont.systemFont(ofSize: 20, weight: .bold)
-        descriptionSubHeading.textColor = UIColor(red: 50/255, green: 50/255, blue: 50/255, alpha: 1)
-        descriptionSubHeading.frame =  CGRect(x: view.safeAreaInsets.left + marginX, y: divider1.frame.maxY + 10, width: descriptionSubHeading.intrinsicContentSize.width, height: descriptionSubHeading.intrinsicContentSize.height)
-        contentView.addSubview(descriptionSubHeading)
-        
-        descriptionDisplay.isUserInteractionEnabled = false
-        descriptionDisplay.isScrollEnabled = false
-        descriptionDisplay.text = dessertDescription
-        descriptionDisplay.font = UIFont.systemFont(ofSize: 15)
-        descriptionDisplay.textColor = UIColor(red: 146/255, green: 146/255, blue: 146/255, alpha: 1)
-        descriptionDisplay.frame = CGRect(x: view.safeAreaInsets.left + marginX, y: descriptionSubHeading.frame.maxY + 5, width: self.scrollView.frame.width - (view.safeAreaInsets.left + view.safeAreaInsets.right + 2 * marginX), height: 100)
-        let descriptionDisplayContentSize = descriptionDisplay.sizeThatFits(CGSize(width: descriptionDisplay.frame.width, height: CGFloat.greatestFiniteMagnitude))
-        descriptionDisplay.frame.size = CGSize(width: descriptionDisplay.frame.width, height: descriptionDisplayContentSize.height)
-        contentView.addSubview(descriptionDisplay)
-        
-        divider2.frame = CGRect(x: 0, y: descriptionDisplay.frame.maxY + 10, width: self.view.frame.width, height: 1)
-        divider2.backgroundColor = UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
-        contentView.addSubview(divider2)
-        
+        //Show the description section if it has been generated successfully
+        if(dessertDescription != nil && dessertDescription != ""){
+            descriptionSubHeading.text = "Description"
+            descriptionSubHeading.font = UIFont.systemFont(ofSize: 20, weight: .bold)
+            descriptionSubHeading.textColor = UIColor(red: 50/255, green: 50/255, blue: 50/255, alpha: 1)
+            descriptionSubHeading.frame =  CGRect(x: view.safeAreaInsets.left + marginX, y: divider1.frame.maxY + 10, width: descriptionSubHeading.intrinsicContentSize.width, height: descriptionSubHeading.intrinsicContentSize.height)
+            contentView.addSubview(descriptionSubHeading)
+            
+            descriptionDisplay.isUserInteractionEnabled = false
+            descriptionDisplay.isScrollEnabled = false
+            descriptionDisplay.text = dessertDescription
+            descriptionDisplay.font = UIFont.systemFont(ofSize: 15)
+            descriptionDisplay.textColor = UIColor(red: 146/255, green: 146/255, blue: 146/255, alpha: 1)
+            descriptionDisplay.frame = CGRect(x: view.safeAreaInsets.left + marginX, y: descriptionSubHeading.frame.maxY + 5, width: self.scrollView.frame.width - (view.safeAreaInsets.left + view.safeAreaInsets.right + 2 * marginX), height: 100)
+            let descriptionDisplayContentSize = descriptionDisplay.sizeThatFits(CGSize(width: descriptionDisplay.frame.width, height: CGFloat.greatestFiniteMagnitude))
+            descriptionDisplay.frame.size = CGSize(width: descriptionDisplay.frame.width, height: descriptionDisplayContentSize.height)
+            contentView.addSubview(descriptionDisplay)
+            
+            divider2.frame = CGRect(x: 0, y: descriptionDisplay.frame.maxY + 10, width: self.view.frame.width, height: 1)
+            divider2.backgroundColor = UIColor(red: 240/255, green: 240/255, blue: 240/255, alpha: 1)
+            contentView.addSubview(divider2)
+            
+            ingredientsSubHeading.frame.origin.y = divider2.frame.maxY + 10
+        }
+        else {
+            ingredientsSubHeading.frame.origin.y = divider1.frame.maxY + 10
+        }
+
         ingredientsSubHeading.text = "Ingredients"
         ingredientsSubHeading.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         ingredientsSubHeading.textColor = UIColor(red: 50/255, green: 50/255, blue: 50/255, alpha: 1)
-        ingredientsSubHeading.frame =  CGRect(x: view.safeAreaInsets.left + marginX, y: divider2.frame.maxY + 10, width: ingredientsSubHeading.intrinsicContentSize.width, height: ingredientsSubHeading.intrinsicContentSize.height)
+        ingredientsSubHeading.frame =  CGRect(x: view.safeAreaInsets.left + marginX, y: ingredientsSubHeading.frame.origin.y, width: ingredientsSubHeading.intrinsicContentSize.width, height: ingredientsSubHeading.intrinsicContentSize.height)
         contentView.addSubview(ingredientsSubHeading)
         
         ingredientsDisplay.isUserInteractionEnabled = false
